@@ -19,6 +19,9 @@ Constraints:
     0 <= k <= 105
 */
 
+//JAVA
+//Time complexity: O(N)
+
 import java.util.HashMap;
 
 class Solution {
@@ -42,3 +45,23 @@ class Solution {
         return false;
     }
 }
+
+#PYTHON
+from typing import List
+
+class Solution:
+    def containsNearbyDuplicate(self, nums: List[int], k: int) -> bool:
+        found = {} #dict
+        for i, num in enumerate(nums):
+            if num in found and i - found[num] <=k:
+                return True
+            found[num] = i
+        return False
+    
+    n = [1,0,1,1]
+    
+solution = Solution()
+nums = [1, 2, 3, 1]
+k = 3
+result = solution.containsNearbyDuplicate(nums, k)
+print(result)  # Output: True
