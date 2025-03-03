@@ -31,6 +31,10 @@ bool isAnagram(char* s, char* t) {
     
     int countOccurences[26]; // count letters of alphabet 
 
+    if(strlen(s) != strlen(t)){
+        return false;
+    }
+
     for (char *ptr = s; *ptr != '\0'; ptr++) {
 
         countOccurences[*ptr - 'a']++;
