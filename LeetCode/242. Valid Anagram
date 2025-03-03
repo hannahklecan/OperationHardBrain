@@ -1,0 +1,51 @@
+//Java
+class Solution {
+    public boolean isAnagram(String s, String t) {
+        int[] count = new int[26];
+        
+        // Count the frequency of characters in string s
+        for (char x : s.toCharArray()) {
+            count[x - 'a']++;
+        }
+        
+        // Decrement the frequency of characters in string t
+        for (char x : t.toCharArray()) {
+            count[x - 'a']--;
+        }
+        
+        // Check if any character has non-zero frequency
+        for (int val : count) {
+            if (val != 0) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+}
+
+
+//C
+// 0 ms!
+bool isAnagram(char* s, char* t) {
+    
+    int countOccurences[26]; // count letters of alphabet 
+
+    for (char *ptr = s; *ptr != '\0'; ptr++) {
+
+        countOccurences[*ptr - 'a']++;
+    }
+
+    for (char *ptr = t; *ptr != '\0'; ptr++) {
+
+        countOccurences[*ptr - 'a']--;
+    }
+
+    for (int i = 0; i < 26; i++){
+        if(countOccurences[i] != 0){
+            return false;
+        }
+    }
+
+    return true;
+}
