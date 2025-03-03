@@ -53,3 +53,130 @@ bool isAnagram(char* s, char* t) {
 
     return true;
 }
+
+
+//C version supporting Unicode
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <locale.h>
+#include <uchar.h>
+#include <stdbool.h>
+
+// Hash table node structure
+typedef struct HashNode {
+    char* key;  // Unicode character (UTF-8)
+    int count;  // Occurrence count
+    struct HashNode* next;
+} HashNode;
+
+#define TABLE_SIZE 10007  // Large prime number for better hash distribution
+
+// Hash function for Unicode strings (UTF-8 safe)
+unsigned int hash(const char* key) {
+    unsigned int hashValue = 0;
+    while (*key) {
+        hashValue = (hashValue * 31) + (unsigned char)(*key);
+        key++;
+    }
+    return hashValue % TABLE_SIZE;
+}
+
+// Insert or update hash table
+void insert(HashNode** table, const char* key, int increment) {
+    unsigned int hashIndex = hash(key);
+    HashNode* temp = table[hashIndex];
+
+    while (temp) {
+        if (strcmp(temp->key, key) == 0) {
+            temp->count += increment;
+            return;
+        }
+        temp = temp->next;
+    }
+
+    // Not found, create a new node
+    HashNode* newNode = (HashNode*)malloc(sizeof(HashNode));
+    newNode->key = strdup(key);  // Store the UTF-8 character
+    newNode->count = increment;
+    newNode->next = table[hashIndex];
+    table[hashIndex] = newNode;
+}
+
+// Search for character count
+int search(HashNode** table, const char* key) {
+    unsigned int hashIndex = hash(key);
+    HashNode* temp = table[hashIndex];
+
+    while (temp) {
+        if (strcmp(temp->key, key) == 0)
+            return temp->count;
+        temp = temp->next;
+    }
+    return 0;
+}
+
+// Free memory allocated for hash table
+void freeTable(HashNode** table) {
+    for (int i = 0; i < TABLE_SIZE; i++) {
+        HashNode* temp = table[i];
+        while (temp) {
+            HashNode* next = temp->next;
+            free(temp->key);
+            free(temp);
+            temp = next;
+        }
+    }
+}
+
+// Function to check if two UTF-8 encoded strings are anagrams
+bool isAnagram(char* s, char* t) {
+    setlocale(LC_ALL, ""); // Enable UTF-8 support
+
+    // Check if lengths match
+    if (strlen(s) != strlen(t))
+        return false;
+
+    // Initialize hash table
+    HashNode* hashTable[TABLE_SIZE] = {NULL};
+
+    // Count occurrences in s
+    char charBuffer[5]; // UTF-8 can be up to 4 bytes + NULL
+    int index = 0;
+    while (s[index] != '\0') {
+        int bytes = mblen(&s[index], MB_CUR_MAX); // Get multi-byte character size
+        if (bytes <= 0) return false; // Invalid UTF-8
+
+        strncpy(charBuffer, &s[index], bytes);
+        charBuffer[bytes] = '\0';
+        insert(hashTable, charBuffer, 1);
+        index += bytes; // Move to next UTF-8 character
+    }
+
+    // Subtract occurrences using t
+    index = 0;
+    while (t[index] != '\0') {
+        int bytes = mblen(&t[index], MB_CUR_MAX); // Get multi-byte character size
+        if (bytes <= 0) return false; // Invalid UTF-8
+
+        strncpy(charBuffer, &t[index], bytes);
+        charBuffer[bytes] = '\0';
+        insert(hashTable, charBuffer, -1);
+        index += bytes;
+    }
+
+    // Check if all values are zero
+    for (int i = 0; i < TABLE_SIZE; i++) {
+        HashNode* temp = hashTable[i];
+        while (temp) {
+            if (temp->count != 0) {
+                freeTable(hashTable);
+                return false;  // Not an anagram
+            }
+            temp = temp->next;
+        }
+    }
+
+    freeTable(hashTable);
+    return true; // Anagram confirmed
+}
