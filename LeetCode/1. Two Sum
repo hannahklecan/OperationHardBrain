@@ -79,6 +79,45 @@ class Solution {
 }
 
 //C Implementation
+//0ms
+/**
+ * Function: twoSum
+ * -------------------
+ * This function finds two indices in the given array `nums` such that the numbers at those indices add up to the `target`.
+ * It returns an array containing these two indices.
+ * 
+ * Algorithm Used: **Hash Table with Separate Chaining**
+ * -------------------------------------------------------
+ * - Instead of using brute force (`O(n²)`), we use **hashing (`O(n)`)** to store and look up values efficiently.
+ * - The **hash table** is implemented as an **array of linked lists (`HashNode* hashMap[TABLE_SIZE]`)** to handle collisions using **separate chaining**.
+ * - This approach allows for **constant-time (O(1)) lookups and insertions on average**.
+ *
+ * Data Structure: **Hash Table with Chaining**
+ * --------------------------------------------------------
+ * - The hash table is implemented using an **array of linked lists**.
+ * - Each **entry in the table corresponds to a linked list** (to handle hash collisions).
+ * - The **hash function (`key % TABLE_SIZE`)** determines the index in the hash table.
+ *
+ * Steps:
+ * ------
+ * 1. **Create a hash table** (array of linked lists) to store values and their indices.
+ * 2. **Iterate through the array:**
+ *    - Calculate the **complement** of the current number (`target - nums[i]`).
+ *    - **Check if the complement exists in the hash table**:
+ *      - ✅ If found, return the indices `[previous_index, current_index]`.
+ *      - ❌ If not found, store the current number in the hash table.
+ * 3. **If no valid pair is found, return `NULL`.**
+ *
+ * Hashing Details:
+ * ----------------
+ * - The **hash function** (`abs(key) % numsSize`) maps numbers to table indices.
+ * - Collisions are handled using **separate chaining (linked lists)**.
+ * - Lookups and insertions in the hash table are **O(1) on average**.
+ * - The overall complexity remains **O(n)**.
+ *
+ * Time Complexity: **O(n)** (Single pass through `nums` plus hash table operations)
+ * Space Complexity: **O(n)** (Hash table stores at most `n` numbers)
+ */
 
 #include <stdlib.h>
 
