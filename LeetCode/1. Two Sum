@@ -78,3 +78,56 @@ class Solution {
     }
 }
 
+//C Implementation
+
+#include <stdlib.h>
+
+typedef struct HashNode {
+
+    int key;
+    int value; 
+    struct HashNode* next; 
+
+}HashNode;
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* twoSum(int* nums, int numsSize, int target, int* returnSize) {
+    
+    struct HashNode** hashMap = (struct HashNode**)calloc(numsSize, sizeof(HashNode*));
+
+    int* retVal = (int*)malloc(2 * sizeof(int));
+
+    for(int i = 0; i < numsSize; i++){
+
+        int compliment = target - nums[i];
+        int hashIndex = abs(compliment) % numsSize;
+        struct HashNode* node = hashMap[hashIndex];
+
+        while(node){
+
+            if (node->key == compliment){
+
+                retVal[0] = node->value;
+                retVal[1] = i;
+                *returnSize = 2;
+                return retVal;
+            }
+            node = node -> next;
+        }
+
+        // Insert current number into hash table
+        hashIndex = abs(nums[i]) % numsSize; 
+        HashNode* newNode = (struct HashNode*)malloc(sizeof(struct HashNode));
+        newNode->key = nums[i];
+        newNode->value = i;
+        newNode->next = hashMap[hashIndex];
+        hashMap[hashIndex] = newNode;
+    } 
+
+    *returnSize = 0;
+    return NULL;
+}
+
+
